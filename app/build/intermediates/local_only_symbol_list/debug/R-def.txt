@@ -1,0 +1,26 @@
+R_DEF: Internal format may change without notice
+local
+drawable ic_launcher
+id bottomNavigation
+id contentArea
+id fabSelectImage
+id genAiResultCard
+id graphicOverlay
+id imageCard
+id nav_descriptions
+id nav_scanner
+id nav_settings
+id paneDescriptions
+id paneScanner
+id previewCard
+id resultCard
+id selectedImageView
+id textGenAiResult
+id textPrediction
+id textPredictionHeader
+id toolbar
+id viewFinder
+layout activity_main
+menu menu_bottom_nav
+string app_name
+style Theme.MLKit

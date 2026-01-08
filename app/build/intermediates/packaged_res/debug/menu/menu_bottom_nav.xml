@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_scanner"
+        android:icon="@android:drawable/ic_menu_camera"
+        android:title="Scanner" />
+    <item
+        android:id="@+id/nav_descriptions"
+        android:icon="@android:drawable/ic_menu_agenda"
+        android:title="Descriptions" />
+    <item
+        android:id="@+id/nav_settings"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:title="Settings" />
+</menu>
