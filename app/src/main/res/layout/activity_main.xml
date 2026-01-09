@@ -160,6 +160,111 @@
                     app:layout_constraintEnd_toEndOf="@+id/imageCard" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Video AI Pane (SmolVLM2 Video Analysis) -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/paneVideoAi"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/videoCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_margin="16dp"
+                    app:cardCornerRadius="24dp"
+                    app:layout_constraintBottom_toTopOf="@+id/videoPromptContainer"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <androidx.media3.ui.PlayerView
+                        android:id="@+id/videoPlayerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:use_controller="true" />
+
+                    <ImageView
+                        android:id="@+id/videoPlaceholder"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerInside"
+                        android:src="@android:drawable/ic_menu_slideshow"
+                        android:visibility="visible"/>
+                </com.google.android.material.card.MaterialCardView>
+
+                <LinearLayout
+                    android:id="@+id/videoPromptContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/videoResultCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="150dp"
+                        android:layout_marginBottom="12dp"
+                        app:cardBackgroundColor="?attr/colorSurfaceVariant"
+                        app:cardCornerRadius="16dp">
+
+                        <ScrollView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="12dp">
+                            <TextView
+                                android:id="@+id/textVideoAiResult"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Select a video and ask a question to start AI analysis."
+                                android:textSize="15sp" />
+                        </ScrollView>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/inputPromptLayout"
+                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:hint="Ask about the video...">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/editVideoPrompt"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="textImeMultiLine"
+                                android:maxLines="3" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnSubmitVideoPrompt"
+                            style="@style/Widget.Material3.Button.IconButton.Filled"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_marginStart="8dp"
+                            app:icon="@android:drawable/ic_menu_send"
+                            app:iconPadding="0dp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                    android:id="@+id/fabSelectVideo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="24dp"
+                    android:text="Add Video"
+                    app:icon="@android:drawable/ic_menu_add"
+                    app:layout_constraintBottom_toBottomOf="@+id/videoCard"
+                    app:layout_constraintEnd_toEndOf="@+id/videoCard" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </FrameLayout>
 
         <com.google.android.material.bottomnavigation.BottomNavigationView

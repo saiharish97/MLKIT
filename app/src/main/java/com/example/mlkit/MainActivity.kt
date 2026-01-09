@@ -25,8 +25,14 @@ import com.google.mlkit.genai.imagedescription.ImageDescriptionRequest
 import com.google.mlkit.genai.imagedescription.ImageDescriber
 import com.google.mlkit.genai.imagedescription.ImageDescriberOptions
 import com.google.mlkit.genai.imagedescription.ImageDescriptionResult
+import androidx.media3.common.MediaItem
+import androidx.media3.exoplayer.ExoPlayer
 import com.google.common.util.concurrent.FutureCallback
 import com.google.common.util.concurrent.Futures
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -36,6 +42,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var cameraExecutor: ExecutorService
     
     private var imageDescriber: ImageDescriber? = null
+    private var exoPlayer: ExoPlayer? = null
+    private lateinit var smolVlmModel: SmolVlmModel
+    private lateinit var videoFrameExtractor: VideoFrameExtractor
+    private var selectedVideoUri: Uri? = null
 
     private val selectImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
@@ -50,6 +60,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private val selectVideoLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.let {
+            playVideo(it)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewBinding = ActivityMainBinding.inflate(layoutInflater)
@@ -57,6 +73,7 @@ class MainActivity : AppCompatActivity() {
 
         setupNavigation()
         setupGenAi()
+        setupVideoAi()
 
         if (allPermissionsGranted()) {
             startCamera()
@@ -111,7 +128,15 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_descriptions -> {
                     viewBinding.paneScanner.visibility = View.GONE
                     viewBinding.paneDescriptions.visibility = View.VISIBLE
+                    viewBinding.paneVideoAi.visibility = View.GONE
                     viewBinding.toolbar.title = "Scene Descriptions"
+                    true
+                }
+                R.id.nav_video_ai -> {
+                    viewBinding.paneScanner.visibility = View.GONE
+                    viewBinding.paneDescriptions.visibility = View.GONE
+                    viewBinding.paneVideoAi.visibility = View.VISIBLE
+                    viewBinding.toolbar.title = "Video AI Chat"
                     true
                 }
                 R.id.nav_settings -> {
@@ -124,6 +149,38 @@ class MainActivity : AppCompatActivity() {
         
         viewBinding.fabSelectImage.setOnClickListener {
             selectImageLauncher.launch("image/*")
+        }
+
+        viewBinding.fabSelectVideo.setOnClickListener {
+            selectVideoLauncher.launch("video/*")
+        }
+
+        viewBinding.btnSubmitVideoPrompt.setOnClickListener {
+            val prompt = viewBinding.editVideoPrompt.text.toString()
+            if (prompt.isNotBlank()) {
+                analyzeVideo(prompt)
+            }
+        }
+    }
+
+    private fun analyzeVideo(prompt: String) {
+        val uri = selectedVideoUri ?: return
+        viewBinding.textVideoAiResult.text = "Extracting frames..."
+        
+        lifecycleScope.launch(Dispatchers.IO) {
+            val frames = videoFrameExtractor.extractFrames(uri, numFrames = 8)
+            
+            withContext(Dispatchers.Main) {
+                viewBinding.textVideoAiResult.text = "Analyzing with SmolVLM2..."
+            }
+            
+            val result = smolVlmModel.analyzeVideo(frames, prompt) { progress ->
+                runOnUiThread { viewBinding.textVideoAiResult.text = progress }
+            }
+            
+            withContext(Dispatchers.Main) {
+                viewBinding.textVideoAiResult.text = result
+            }
         }
     }
 
@@ -182,6 +239,27 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         cameraExecutor.shutdown()
         imageDescriber?.close()
+        exoPlayer?.release()
+        if (::smolVlmModel.isInitialized) smolVlmModel.close()
+    }
+
+    private fun setupVideoAi() {
+        exoPlayer = ExoPlayer.Builder(this).build()
+        viewBinding.videoPlayerView.player = exoPlayer
+        smolVlmModel = SmolVlmModel(this)
+        smolVlmModel.loadModels()
+        videoFrameExtractor = VideoFrameExtractor(this)
+    }
+
+    private fun playVideo(uri: Uri) {
+        selectedVideoUri = uri
+        viewBinding.videoPlaceholder.visibility = View.GONE
+        exoPlayer?.let {
+            val mediaItem = MediaItem.fromUri(uri)
+            it.setMediaItem(mediaItem)
+            it.prepare()
+            it.play()
+        }
     }
 
     companion object {

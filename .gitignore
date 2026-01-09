@@ -14,3 +14,7 @@
 .cxx
 local.properties
 /app/build
+
+/app/src/main/assets
+*.hprof
+debug_smolvlm.py

@@ -10,7 +10,15 @@
         android:label="@string/app_name"
         android:roundIcon="@drawable/ic_launcher"
         android:supportsRtl="true"
+        android:largeHeap="true"
         android:theme="@style/Theme.MLKit">
+
+        <meta-data
+            android:name="com.google.mlkit.vision.DEPENDENCIES"
+            android:value="barcode,face,ocr,ica,custom_ica" />
+        <meta-data
+            android:name="google_analytics_adid_collection_enabled"
+            android:value="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true">

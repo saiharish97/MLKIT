@@ -58,6 +58,15 @@ dependencies {
 
     // Guava (required for ListenableFuture callbacks)
     implementation("com.google.guava:guava:33.0.0-android")
+    
+    // ONNX Runtime
+    implementation("com.microsoft.onnxruntime:onnxruntime-android:1.17.1")
+    
+    // Media3 (ExoPlayer)
+    val media3_version = "1.2.1"
+    implementation("androidx.media3:media3-exoplayer:${media3_version}")
+    implementation("androidx.media3:media3-ui:${media3_version}")
+
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
